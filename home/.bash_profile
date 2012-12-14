@@ -12,6 +12,10 @@ alias bu="b update"
 alias be="b exec"
 alias binit="bi && b package && echo 'vendor/ruby' >> .gitignore"
 
+# Setup rbenv
+
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+
 # Set up prompt
 
 function parse_git_branch {
