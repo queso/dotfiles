@@ -1,0 +1,25 @@
+[user]
+	name = Josh Owens
+	email = joshua.owens@gmail.com
+[color]
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
+[core]
+	editor = mvim -f
+	excludesfile = /Users/josh/.gitignore_global
+[github]
+	user = queso
+[heroku]
+[alias]
+  st = status
+  ci = commit
+  br = branch
+  co = checkout
+  df = diff -b --color-words
+  dfw = diff -w
+  pend = cherry -v origin/master
+  lg = log --graph --pretty=format:'%Cred%H%Creset -%Cblue %an  %Creset %Cgreen(%cr)%Creset %s'
+  graph = log --graph --oneline --decorate=short --branches='*'
+  fl = log --pretty=full --stat
