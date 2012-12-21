@@ -1,3 +1,7 @@
+# Setup rbenv
+
+if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
+
 # Variables
 
 export EDITOR="vim"
@@ -11,10 +15,6 @@ alias bi="b install --binstubs=binstubs --path vendor"
 alias bu="b update"
 alias be="b exec"
 alias binit="bi && b package && echo 'vendor/ruby' >> .gitignore"
-
-# Setup rbenv
-
-if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # Set up prompt
 
