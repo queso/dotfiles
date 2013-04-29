@@ -6,7 +6,7 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 export EDITOR="vim"
 export GIT_EDITOR="vim"
-export PATH="./binstubs:$HOME/.rbenv/bin:/usr/local/share/npm/bin:$PATH"
+export PATH="./binstubs:/usr/local/bin:$HOME/.rbenv/bin:/usr/local/share/npm/bin:$PATH"
 
 # Aliases
 
@@ -57,3 +57,7 @@ PS2='> '
 PS4='+ '
 }
 proml
+
+
+### Added by the Heroku Toolbelt
+export PATH="/usr/local/heroku/bin:$PATH"
