@@ -6,7 +6,7 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 export EDITOR="vim"
 export GIT_EDITOR="vim"
-export PATH="./binstubs:$HOME/.rbenv/bin:$PATH"
+export PATH="./binstubs:$HOME/.rbenv/bin:/usr/local/share/npm/bin:$PATH"
 
 # Aliases
 
