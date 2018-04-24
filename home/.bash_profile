@@ -7,6 +7,7 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 export EDITOR="vim"
 export GIT_EDITOR="vim"
 export PATH="./binstubs:/usr/local/bin:$HOME/.rbenv/bin:/usr/local/share/npm/bin:$PATH"
+export PROJECTS_DIR="/Users/kon6880/Code"
 
 # Aliases
 
@@ -23,7 +24,7 @@ git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/(\1$(parse
 }
 
 function parse_git_dirty {
-  [[ $(git status 2> /dev/null | tail -n1) != "nothing to commit, working directory clean" ]] && echo "☠"
+  [[ $(git status 2> /dev/null | tail -n1) != "nothing to commit, working tree clean" ]] && echo "☠"
 }
 
 
@@ -70,3 +71,5 @@ proml
 
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
+export NVM_DIR="$HOME/.nvm"
+. "/usr/local/opt/nvm/nvm.sh"
