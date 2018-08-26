@@ -70,6 +70,6 @@ proml
 ~/.bash_keys
 
 ### Added by the Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
+export PATH="~/.rbenv/shims:/usr/local/heroku/bin:$PATH"
 export NVM_DIR="$HOME/.nvm"
 . "/usr/local/opt/nvm/nvm.sh"
