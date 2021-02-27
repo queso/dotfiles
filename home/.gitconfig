@@ -7,7 +7,7 @@
   interactive = auto
   status = auto
 [core]
-  editor = mvim -f
+	editor = vim
   excludesfile = /Users/josh/.gitignore_global
 [github]
   user = queso
@@ -23,8 +23,5 @@
   lg = log --graph --pretty=format:'%Cred%H%Creset -%Cblue %an  %Creset %Cgreen(%cr)%Creset %s'
   graph = log --graph --oneline --decorate=short --branches='*'
   fl = log --pretty=full --stat
-[remote "origin"]
-  fetch = +refs/heads/*:refs/remotes/origin/*
-  fetch = +refs/pull/*/head:refs/remotes/origin/pr/*
 [push]
 	default = simple
