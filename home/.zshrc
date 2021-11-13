@@ -102,8 +102,7 @@ ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}☠️ "
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+alias gca="git commit --amend --author='Josh Owens <joshua.owens@gmail.com>'"
+
 export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 export PUPPETEER_EXECUTABLE_PATH=`which chromium`
-
-export NVM_DIR="$HOME/.nvm"
-source $(brew --prefix nvm)/nvm.sh

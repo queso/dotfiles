@@ -25,3 +25,5 @@
   fl = log --pretty=full --stat
 [push]
 	default = simple
+[pull]
+	ff = only
