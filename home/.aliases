@@ -1,0 +1,1 @@
+alias gca="git commit --amend --author='Josh Owens <joshua.owens@gmail.com>'"
