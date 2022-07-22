@@ -10,3 +10,5 @@ ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}☠️ "
 
 source ~/.aliases
 source ~/.zshenv
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
