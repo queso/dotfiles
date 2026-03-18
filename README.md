@@ -13,14 +13,10 @@ brew install stow
 
 # Clone and link
 git clone git@github.com:queso/dotfiles.git ~/dotfiles
-cd ~/dotfiles && stow -t ~ shell git tmux claude brew
+cd ~/dotfiles && stow -t ~ shell git tmux vim claude brew
 
 # Install packages
 ./install.sh
-
-# Vim (separate repo)
-git clone git@github.com:queso/vim-config.git ~/vim-config
-cd ~/vim-config && stow -t ~ home
 ```
 
 ### Linux (Ubuntu)
@@ -30,14 +26,10 @@ sudo apt-get install stow
 
 # Clone and link
 git clone git@github.com:queso/dotfiles.git ~/dotfiles
-cd ~/dotfiles && stow -t ~ shell git tmux claude brew
+cd ~/dotfiles && stow -t ~ shell git tmux vim claude brew
 
 # Install packages
 ./install.sh
-
-# Vim (separate repo)
-git clone git@github.com:queso/vim-config.git ~/vim-config
-cd ~/vim-config && stow -t ~ home
 ```
 
 ### Post-setup
@@ -58,6 +50,7 @@ ln -s ~/Code/Brain/.claude/memory ~/.claude/projects/-Users-$(whoami)-Code-Brain
 | `shell` | `.zshrc`, `.zshenv`, `.zprofile`, `.aliases` |
 | `git` | `.gitconfig`, `.gitignore_global` |
 | `tmux` | `.tmux.conf`, terminfo files |
+| `vim` | `.vimrc`, `.gvimrc`, `.vim/` (Vundle plugins) |
 | `claude` | Claude Code settings, statusline, custom agents |
 | `brew` | `Brewfile` for Homebrew |
 

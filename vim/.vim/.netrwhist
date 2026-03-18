@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =5
+let g:netrw_dirhist_5='/Users/josh/Code/ArcaneLayers/arcane-k8s/kubernetes/apps/shopify-sync'
+let g:netrw_dirhist_4='/Users/josh/Code/ArcaneLayers/arcane-k8s/kubernetes/apps'
+let g:netrw_dirhist_3='/Users/josh/Code/ArcaneLayers/arcane-k8s/kubernetes/cronjobs'
+let g:netrw_dirhist_2='/Users/josh/Code/ArcaneLayers/arcane-k8s/kubernetes/monitoring'
+let g:netrw_dirhist_1='/Users/josh/Code/ArcaneLayers/arcane-k8s/kubernetes/secrets/sealed'
+let g:netrw_dirhist_0='/Users/josh/Code/ArcaneLayers/arcane-k8s/kubernetes/secrets'
+let g:netrw_dirhist_9='/Users/josh/Code/ArcaneLayers/arcane-k8s/kubernetes'
+let g:netrw_dirhist_8='/Users/josh/Code/ArcaneLayers/arcane-k8s'
+let g:netrw_dirhist_7='/Users/josh/Code/ArcaneLayers/arcane-ops-v2'
+let g:netrw_dirhist_6='/Users/josh/Code/ArcaneLayers/data-ops/.claude/agents'
