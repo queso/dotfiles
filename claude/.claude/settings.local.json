@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ollama list:*)",
+      "Bash(du:*)",
+      "Bash(docker images:*)",
+      "Bash(docker system df:*)",
+      "Bash(docker system prune:*)",
+      "Bash(ollama rm:*)",
+      "Bash(docker volume ls:*)",
+      "Bash(orbctl --help:*)",
+      "Bash(orbctl docker:*)",
+      "Bash(docker run:*)",
+      "Bash(docker info:*)",
+      "Bash(orb run:*)",
+      "Bash(orbctl list:*)",
+      "Bash(orb -m docker run du -sh /*)",
+      "Bash(orbctl config:*)",
+      "Bash(sudo orb run:*)",
+      "Bash(ls:*)",
+      "Bash(source:*)",
+      "Bash(nvm uninstall:*)",
+      "Bash(xargs:*)",
+      "WebSearch"
+    ]
+  }
+}

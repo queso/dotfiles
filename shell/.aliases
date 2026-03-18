@@ -1,0 +1,22 @@
+alias gca="git commit --amend --author='Josh Owens <joshua.owens@gmail.com>'"
+
+# Encrypt/decrypt CBT therapy files with age
+cbt_lock() {
+  local dir="$HOME/Code/Brain/Health/mental"
+  local key="$HOME/.age/brain-key.txt"
+  for f in "$dir"/*.md; do
+    [ -f "$f" ] || continue
+    age -R "$key" -o "${f}.age" "$f" && rm "$f"
+  done
+  echo "CBT files locked."
+}
+
+cbt_unlock() {
+  local dir="$HOME/Code/Brain/Health/mental"
+  local key="$HOME/.age/brain-key.txt"
+  for f in "$dir"/*.md.age; do
+    [ -f "$f" ] || continue
+    age -d -i "$key" -o "${f%.age}" "$f" && rm "$f"
+  done
+  echo "CBT files unlocked."
+}

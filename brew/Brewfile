@@ -1,0 +1,36 @@
+tap "homebrew/bundle"
+tap "derailed/k9s"
+
+# Core tools
+brew "git"
+brew "jq"
+brew "wget"
+brew "coreutils"
+brew "fzf"
+brew "parallel"
+brew "age"
+
+# Cloud & infra
+brew "awscli"
+brew "gh"
+brew "ansible"
+brew "terraform"
+brew "docker"
+brew "mkcert"
+
+# Kubernetes
+brew "kubernetes-cli"
+brew "helm"
+brew "derailed/k9s/k9s"
+brew "k3d"
+brew "kompose"
+brew "kubeconform"
+brew "kubectx"
+brew "kubeseal"
+brew "minikube"
+
+# Dev
+brew "tmux"
+brew "n"
+brew "pnpm"
+brew "bun"
