@@ -11,5 +11,3 @@ source ~/.aliases
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.env.local ] && source ~/.env.local
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
-
-ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}☠ "
