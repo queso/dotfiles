@@ -6,7 +6,7 @@ plugins=(brew dotenv git ssh-agent)
 
 source $ZSH/oh-my-zsh.sh
 
-ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}☠️ "
+ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}☠ "
 
 source ~/.aliases
 
