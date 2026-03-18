@@ -74,8 +74,8 @@ elif command -v apt-get &>/dev/null; then
 
   # kubeseal
   if ! command -v kubeseal &>/dev/null; then
-    curl -fsSL https://github.com/bitnami-labs/sealed-secrets/releases/latest/download/kubeseal-linux-amd64 -o /tmp/kubeseal
-    sudo install /tmp/kubeseal /usr/local/bin/kubeseal
+    KUBESEAL_VERSION=$(curl -s https://api.github.com/repos/bitnami-labs/sealed-secrets/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+    curl -fsSL "https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz" | sudo tar xz -C /usr/local/bin kubeseal
   fi
 
   # n (Node version manager)
