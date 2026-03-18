@@ -57,9 +57,10 @@ fi
 
 echo ""
 echo "Bootstrap complete. Manual steps remaining:"
-echo "  1. Populate ~/.env.local with API keys"
-echo "  2. Run 'claude' to authenticate"
-echo "  3. Clone Brain repo and create memory symlink:"
+echo "  1. Run 'vim +PlugInstall' to install vim plugins"
+echo "  2. Populate ~/.env.local with API keys"
+echo "  3. Run 'claude' to authenticate"
+echo "  4. Clone Brain repo and create memory symlink:"
 echo "     git clone git@github.com:queso/Brain ~/Code/Brain"
 echo "     mkdir -p ~/.claude/projects/-Users-\$(whoami)-Code-Brain"
 echo "     ln -s ~/Code/Brain/.claude/memory ~/.claude/projects/-Users-\$(whoami)-Code-Brain/memory"
