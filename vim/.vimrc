@@ -57,7 +57,9 @@ syntax on
 set shortmess=I
 
 set t_Co=256
-set term=xterm-256color-italic
+if !has('gui_running') && &term =~# 'xterm'
+  set term=xterm-256color
+endif
 set background=dark
 let g:seoul256_background = 233
 
