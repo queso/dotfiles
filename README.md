@@ -38,6 +38,11 @@ cd ~/dotfiles && stow -t ~ shell git tmux vim claude brew
 # Secrets (never committed — copy from password manager)
 vim ~/.env.local
 
+# Install vim-plug and plugins
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+vim +PlugInstall +qall
+
 # Brain repo memory symlink (adjust path if Brain lives elsewhere)
 mkdir -p ~/.claude/projects/-Users-$(whoami)-Code-Brain
 ln -s ~/Code/Brain/.claude/memory ~/.claude/projects/-Users-$(whoami)-Code-Brain/memory
@@ -50,7 +55,7 @@ ln -s ~/Code/Brain/.claude/memory ~/.claude/projects/-Users-$(whoami)-Code-Brain
 | `shell` | `.zshrc`, `.zshenv`, `.zprofile`, `.aliases` |
 | `git` | `.gitconfig`, `.gitignore_global` |
 | `tmux` | `.tmux.conf`, terminfo files |
-| `vim` | `.vimrc`, `.gvimrc`, `.vim/` (Vundle plugins) |
+| `vim` | `.vimrc`, `.gvimrc`, `.vim/` (vim-plug, plugins installed on setup) |
 | `claude` | Claude Code settings, statusline, custom agents |
 | `brew` | `Brewfile` for Homebrew |
 

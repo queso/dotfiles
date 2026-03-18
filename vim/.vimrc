@@ -1,57 +1,55 @@
 set nocompatible               " be iMproved
 filetype off                   " required!
 
-" Vundle
-set rtp+=~/.vim/bundle/vundle.vim
-call vundle#begin()
-Plugin 'VundleVim/Vundle.vim'
+" vim-plug
+call plug#begin('~/.vim/plugged')
 
 " Functionality
-Plugin 'surround.vim'
-Plugin 'endwise.vim'
-Plugin 'wincent/Command-T'
-Plugin 'matchit.zip'
-Plugin 'ack.vim'
-Plugin 'ragtag.vim'
-Plugin 'fugitive.vim'
-Plugin 'godlygeek/tabular'
-Plugin 'tomtom/tcomment_vim'
-Plugin 'scrooloose/syntastic'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'junegunn/fzf'
-Plugin 'junegunn/fzf.vim'
-Plugin 'neoclide/coc.nvim'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'lambdalisue/battery.vim'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-endwise'
+Plug 'wincent/Command-T'
+Plug 'tmhedberg/matchit'
+Plug 'mileszs/ack.vim'
+Plug 'tpope/vim-ragtag'
+Plug 'tpope/vim-fugitive'
+Plug 'godlygeek/tabular'
+Plug 'tomtom/tcomment_vim'
+Plug 'scrooloose/syntastic'
+Plug 'airblade/vim-gitgutter'
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'lambdalisue/battery.vim'
 
 " Language support
-Plugin 'vim-ruby/vim-ruby'
-Plugin 'lunaru/vim-less'
-Plugin 'wakatime/vim-wakatime'
-Plugin 'pangloss/vim-javascript'
-Plugin 'leafgarland/typescript-vim'
-Plugin 'jparise/vim-graphql'
-Plugin 'udalov/kotlin-vim'
-Plugin 'posva/vim-vue'
-Plugin 'styled-components/vim-styled-components'
-Plugin 'MaxMEllon/vim-jsx-pretty'
-Plugin 'peitalin/vim-jsx-typescript'
-Plugin 'jxnblk/vim-mdx-js'
-Plugin 'prisma/vim-prisma'
+Plug 'vim-ruby/vim-ruby'
+Plug 'lunaru/vim-less'
+Plug 'wakatime/vim-wakatime'
+Plug 'pangloss/vim-javascript'
+Plug 'leafgarland/typescript-vim'
+Plug 'jparise/vim-graphql'
+Plug 'udalov/kotlin-vim'
+Plug 'posva/vim-vue'
+Plug 'styled-components/vim-styled-components'
+Plug 'MaxMEllon/vim-jsx-pretty'
+Plug 'peitalin/vim-jsx-typescript'
+Plug 'jxnblk/vim-mdx-js'
+Plug 'prisma/vim-prisma'
 
 " Themes
-Plugin 'noahfrederick/vim-noctu'
-Plugin 'goatslacker/mango.vim'
-Plugin 'tpope/vim-vividchalk'
-Plugin 'nanotech/jellybeans.vim'
-Plugin 'tomasiser/vim-code-dark'
-Plugin 'sonph/onehalf'
-Plugin 'chr4/jellygrass.vim'
-Plugin 'yuttie/hydrangea-vim'
-Plugin 'junegunn/seoul256.vim'
+Plug 'noahfrederick/vim-noctu'
+Plug 'goatslacker/mango.vim'
+Plug 'tpope/vim-vividchalk'
+Plug 'nanotech/jellybeans.vim'
+Plug 'tomasiser/vim-code-dark'
+Plug 'sonph/onehalf'
+Plug 'chr4/jellygrass.vim'
+Plug 'yuttie/hydrangea-vim'
+Plug 'junegunn/seoul256.vim'
 
-call vundle#end()
+call plug#end()
 
 filetype plugin indent on
 syntax on
