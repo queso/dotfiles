@@ -10,7 +10,7 @@ elif command -v apt-get &>/dev/null; then
   echo "Installing packages via apt..."
   sudo apt-get update
   sudo apt-get install -y \
-    git jq wget coreutils fzf parallel age \
+    git jq wget coreutils fzf parallel age glow \
     awscli ansible terraform docker.io tmux mkcert \
     kubectl helm
 

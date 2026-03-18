@@ -9,6 +9,7 @@ brew "coreutils"
 brew "fzf"
 brew "parallel"
 brew "age"
+brew "glow"
 
 # Cloud & infra
 brew "awscli"
