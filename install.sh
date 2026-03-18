@@ -12,7 +12,7 @@ elif command -v apt-get &>/dev/null; then
 
   # Packages available in default Ubuntu repos
   sudo apt-get install -y \
-    git jq wget coreutils fzf parallel age \
+    git jq wget unzip coreutils fzf parallel age \
     ansible docker.io tmux mkcert
 
   # AWS CLI v2
