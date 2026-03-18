@@ -1,5 +1,11 @@
 alias gca="git commit --amend --author='Josh Owens <joshua.owens@gmail.com>'"
 
+# SSH into magi and attach/create a named tmux session
+magi() {
+  local session="${1:-default}"
+  ssh -t magi.theowens.casa "tmux new-session -As $session"
+}
+
 # Encrypt/decrypt CBT therapy files with age
 cbt_lock() {
   local dir="$HOME/Code/Brain/Health/mental"
