@@ -30,6 +30,11 @@ stow -t ~ --adopt shell git tmux vim claude brew
 # Reset any adopted files back to repo versions
 git checkout .
 
+# Compile custom terminfo entries (italic support)
+for ti in "$DOTFILES"/tmux/terminfo/*.terminfo; do
+  [ -f "$ti" ] && tic -x "$ti"
+done
+
 # Install packages
 "$DOTFILES/install.sh"
 
