@@ -4,7 +4,7 @@ set -e
 
 if [[ "$(uname)" == "Darwin" ]]; then
   echo "Installing packages via Homebrew..."
-  brew bundle --file="$(dirname "$0")/home/Brewfile"
+  brew bundle --file="$(dirname "$0")/brew/Brewfile"
 
 elif command -v apt-get &>/dev/null; then
   echo "Installing packages via apt..."
@@ -58,4 +58,4 @@ elif command -v apt-get &>/dev/null; then
   fi
 fi
 
-echo "Done."
+echo "Packages installed."

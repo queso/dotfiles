@@ -2,50 +2,42 @@
 
 Personal dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/). Works on macOS and Linux (Ubuntu).
 
-## Quick Start
+## New Machine Setup
 
-### Mac
+### 1. SSH key
 
 ```bash
-# Install Homebrew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-brew install stow
-
-# Clone and link
-git clone git@github.com:queso/dotfiles.git ~/dotfiles
-cd ~/dotfiles && stow -t ~ shell git tmux vim claude brew
-
-# Install packages
-./install.sh
+ssh-keygen -t ed25519
+# Add ~/.ssh/id_ed25519.pub to GitHub
 ```
 
-### Linux (Ubuntu)
+### 2. Bootstrap
 
 ```bash
-sudo apt-get install stow
-
-# Clone and link
 git clone git@github.com:queso/dotfiles.git ~/dotfiles
-cd ~/dotfiles && stow -t ~ shell git tmux vim claude brew
-
-# Install packages
-./install.sh
+~/dotfiles/bootstrap.sh
 ```
 
-### Post-setup
+That's it. The bootstrap script handles:
+- Installing stow and linking all packages
+- Installing platform packages (brew on mac, apt on linux)
+- vim-plug and all vim plugins
+- Claude Code (native installer)
+- oh-my-zsh
+
+### 3. Manual steps after bootstrap
 
 ```bash
-# Secrets (never committed — copy from password manager)
+# Secrets (copy from password manager)
 vim ~/.env.local
 
-# Install vim-plug and plugins
-curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-vim +PlugInstall +qall
-
-# Brain repo memory symlink (adjust path if Brain lives elsewhere)
+# Brain repo + Claude memory symlink
+git clone git@github.com:queso/Brain ~/Code/Brain
 mkdir -p ~/.claude/projects/-Users-$(whoami)-Code-Brain
 ln -s ~/Code/Brain/.claude/memory ~/.claude/projects/-Users-$(whoami)-Code-Brain/memory
+
+# Authenticate Claude Code
+claude
 ```
 
 ## Packages
@@ -62,21 +54,18 @@ ln -s ~/Code/Brain/.claude/memory ~/.claude/projects/-Users-$(whoami)-Code-Brain
 ## Files Not Tracked
 
 - `~/.env.local` — API keys and secrets
-- `~/.ssh/` — SSH keys (regenerate per machine, config could be added later)
+- `~/.ssh/` — SSH keys (regenerate per machine)
 - `~/.kube/config` — K8s contexts (rebuilt from infra)
 - `~/.claude/projects/` — session data, rebuilds naturally
 
 ## Adding New Files
 
 ```bash
-# Example: track a new dotfile
+# Add to an existing package
 cp ~/.some-config ~/dotfiles/shell/.some-config
 cd ~/dotfiles && stow -R -t ~ shell
-```
 
-Or create a new package:
-
-```bash
+# Or create a new package
 mkdir ~/dotfiles/newpkg
 cp ~/.whatever ~/dotfiles/newpkg/.whatever
 cd ~/dotfiles && stow -t ~ newpkg
