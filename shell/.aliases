@@ -26,3 +26,12 @@ cbt_unlock() {
   done
   echo "CBT files unlocked."
 }
+
+# Claude Code with bypass permissions (you only live once)
+alias cyolo='claude --dangerously-skip-permissions'
+
+# Preview markdown in a tmux split pane with glow
+mdread() { tmux split-window -h "glow -p '$1'"; }
+
+# Preview code in a tmux split pane with syntax highlighting
+coderead() { tmux split-window -h "batcat --paging=always '$1'"; }
