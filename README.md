@@ -48,13 +48,39 @@ claude
 | `git` | `.gitconfig`, `.gitignore_global` |
 | `tmux` | `.tmux.conf`, terminfo files |
 | `vim` | `.vimrc`, `.gvimrc`, `.vim/` (vim-plug, plugins installed on setup) |
-| `claude` | Claude Code settings, statusline, custom agents |
+| `claude` | Claude Code settings, statusline, custom agents, screenshot relay hook |
+| `ssh` | SSH config (screenshot relay ControlMaster for magi → Mac) |
 | `brew` | `Brewfile` for Homebrew |
+
+## Screenshot Relay (magi only)
+
+Drag-and-drop screenshots into remote Claude Code sessions over SSH+tmux. A `UserPromptSubmit` hook detects macOS screenshot paths in prompts, SFTPs the image from the Mac, and rewrites the path to a local `/tmp/screenshots/` path.
+
+### Setup on a fresh magi
+
+```bash
+# 1. Install avahi-daemon for mDNS resolution
+sudo apt install avahi-daemon
+
+# 2. Generate dedicated SSH key (read-only, SFTP-only)
+ssh-keygen -t ed25519 -f ~/.ssh/screenshot_relay -N "" -C "magi-screenshot-relay"
+
+# 3. Add public key to Mac's ~/.ssh/authorized_keys (replace YOUR_KEY):
+#    command="/usr/libexec/sftp-server",no-pty,no-agent-forwarding,no-port-forwarding,from="MAGI_IP" YOUR_KEY
+
+# 4. Verify connection
+sftp macbook <<< "ls /Users/josh/Desktop"
+
+# 5. Add cron cleanup (daily 3am, 24hr TTL)
+echo '0 3 * * * find /tmp/screenshots -type f -mmin +1440 -delete 2>/dev/null' | crontab -
+```
+
+The SSH config (`~/.ssh/config`) and hook script (`~/.claude/hooks/screenshot-relay.sh`) are managed by stow. The SSH key is per-machine — regenerate it and add to the Mac each time.
 
 ## Files Not Tracked
 
 - `~/.env.local` — API keys and secrets
-- `~/.ssh/` — SSH keys (regenerate per machine)
+- `~/.ssh/screenshot_relay*` — SSH keys (regenerate per machine)
 - `~/.kube/config` — K8s contexts (rebuilt from infra)
 - `~/.claude/projects/` — session data, rebuilds naturally
 

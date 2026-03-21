@@ -9,8 +9,29 @@
   },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
-    "playwright@claude-plugins-official": false
+    "playwright@claude-plugins-official": false,
+    "ai-code-audit@ai-code-audit": true
+  },
+  "extraKnownMarketplaces": {
+    "ai-code-audit": {
+      "source": {
+        "source": "directory",
+        "path": "/home/josh/Code/TheAITeam/ai-code-audit"
+      }
+    }
   },
   "alwaysThinkingEnabled": true,
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/screenshot-relay.sh"
+          }
+        ]
+      }
+    ]
+  }
 }
