@@ -47,7 +47,12 @@ magi() {
   local remote=(ssh -o BatchMode=yes magi.local)
   case "${1:-}" in
     ls)
-      "${remote[@]}" 'zsh -lc "for h in \$(herdr session list --json | jq -r \".[] | select(.status==\\\"running\\\") | .name\"); do [ \"\$h\" = default ] && continue; printf \"%-15s\" \"\$h\"; herdr --session \"\$h\" workspace list | jq -r \"[.result.workspaces[] | .label + \\\"(\\\" + .agent_status + \\\")\\\"] | join(\\\"  \\\")\"; done"'
+      "${remote[@]}" 'zsh -lc "bash -s"' <<'EOS'
+for h in $(herdr session list --json | jq -r '.sessions[] | select(.running and (.default|not)) | .name' | sort); do
+  printf "%-15s" "$h"
+  herdr --session "$h" workspace list | jq -r '[.result.workspaces[] | .label + "(" + .agent_status + ")"] | join("  ")'
+done
+EOS
       ;;
     "")
       echo "usage: magi ls | magi <house> | magi <house> <room> [dir]" >&2; return 1
