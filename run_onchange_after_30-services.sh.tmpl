@@ -1,11 +1,15 @@
 #!/bin/bash
 # Services with a clean environment: herdr server, nightly chezmoi re-add.
 # Never start herdr from a shell inside a Claude session. Re-runs when the unit files change.
+# houses: {{ .houses | join "," }}
 # {{ include "dot_config/systemd/user/herdr.service" | sha256sum }} {{ include "dot_config/systemd/user/herdr@.service" | sha256sum }} {{ include "dot_config/systemd/user/chezmoi-readd.timer" | sha256sum }} {{ include "Library/LaunchAgents/casa.theowens.chezmoi-readd.plist" | sha256sum }}
 set -e
 {{ if eq .chezmoi.os "linux" -}}
 systemctl --user daemon-reload
 systemctl --user enable --now herdr >/dev/null 2>&1 || true
+{{ range .houses -}}
+systemctl --user enable --now "herdr@{{ . }}" >/dev/null 2>&1 || true
+{{ end -}}
 systemctl --user enable --now chezmoi-readd.timer >/dev/null 2>&1 || true
 {{ else -}}
 brew services list 2>/dev/null | grep -q '^herdr.*started' || brew services start herdr
