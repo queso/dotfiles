@@ -20,3 +20,5 @@ fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/.env.local ] && source ~/.env.local
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+export PATH="$HOME/.local/bin:$PATH"
