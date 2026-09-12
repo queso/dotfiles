@@ -67,7 +67,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.local/bin/herdmates hook TeammateIdle",
+            "command": "[ -x $HOME/.local/bin/herdmates ] && $HOME/.local/bin/herdmates hook TeammateIdle || true",
             "timeout": 10
           }
         ]
@@ -78,7 +78,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.local/bin/herdmates hook TaskCreated",
+            "command": "[ -x $HOME/.local/bin/herdmates ] && $HOME/.local/bin/herdmates hook TaskCreated || true",
             "timeout": 10
           }
         ]
@@ -89,7 +89,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.local/bin/herdmates hook TaskCompleted",
+            "command": "[ -x $HOME/.local/bin/herdmates ] && $HOME/.local/bin/herdmates hook TaskCompleted || true",
             "timeout": 10
           }
         ]
