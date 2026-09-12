@@ -18,7 +18,7 @@ plugin. Then by hand: Dank Mono (paid font), `~/.env.local`, `claude` to authent
 ## Day to day
 
 - Edit files in `$HOME`, then `chezmoi re-add` and commit here. Or `chezmoi edit --apply <file>`.
-- `chezmoi status` shows drift; `chezmoi diff` shows it in full; `chezmoi apply` discards it.
+- `chezmoi status` shows drift; `chezmoi diff` shows it in full; `chezmoi apply --force <file>` discards it.
 - A Claude Code SessionStart hook (`.claude/hooks/chezmoi-drift.sh`) puts any drift into every
   agent session's context. A nightly job (`~/.local/bin/chezmoi-readd`, launchd on macOS,
   systemd timer on Linux) re-adds, commits as `re-add from <host>`, and pushes.
