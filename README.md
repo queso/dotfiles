@@ -52,7 +52,7 @@ claude
 | `ssh` | SSH config (screenshot relay ControlMaster for magi → Mac) |
 | `claude` | Claude Code settings, statusline, custom agents, `hooks/` (herdr agent-state hook) |
 | `brew` | `Brewfile` for Homebrew |
-| `herdr` | `.config/herdr/config.toml` (ctrl+j prefix, `prefix+=` rebalance) and `bin/herdr-rebalance` |
+| `herdr` | `.config/herdr/config.toml` (ctrl+j prefix, `prefix+=` rebalance), `bin/herdr-rebalance`, and `.config/systemd/user/herdr.service` (Linux) |
 
 ## herdr (agent runtime)
 
@@ -60,7 +60,7 @@ Stowed config covers the prefix key and the rebalance binding. The rest is a one
 setup per machine, after `brew bundle`:
 
 ```bash
-brew services start herdr                 # server under launchd (Linux: a systemd user unit + enable-linger)
+brew services start herdr                 # macOS: server under launchd
 herdr integration install claude          # rewrites ~/.claude/hooks/herdr-agent-state.sh (already stowed) + settings hook
 git clone git@github.com:queso/herdmates ~/Code/OpenSource/herdmates && cd ~/Code/OpenSource/herdmates
 git checkout lead-width-override          # until caioniehues/herdmates#136 merges
@@ -68,13 +68,19 @@ herdr plugin link ~/Code/OpenSource/herdmates
 cargo install --path . --root ~/.local    # plugin link does not build; needs rustup's toolchain bin on PATH
 ```
 
+On Linux there's no launchd, so the server runs under a systemd user unit instead of
+`brew services`: `systemctl --user enable --now herdr`. The unit file
+(`.config/systemd/user/herdr.service`) is part of the `herdr` package and gets stowed like
+everything else. Never start `herdr server` by hand from a shell; running it outside the
+unit leaks session environment (e.g. `CLAUDE_CODE_CHILD_SESSION`) into every pane.
+
 Never start `herdr server` from inside a Claude Code session: panes inherit
 `CLAUDE_CODE_CHILD_SESSION`, transcript saving turns off, and restart resume dies.
 
 The `claude()` function in `shell/.aliases` routes through the herdmates shim only inside a
 herdr pane and sets `TEAMMUX_LEAD_WIDTH=50` (the lead's share at spawn). `prefix+=` equalizes
-every pane afterwards. The rebalance binding in `config.toml` uses an absolute path; edit it on
-a machine whose home is not `/Users/josh`.
+every pane afterwards. The rebalance binding in `config.toml` resolves `$HOME` at runtime, so
+it works unchanged on any machine.
 
 ## Screenshot Relay (magi only)
 

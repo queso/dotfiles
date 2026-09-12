@@ -16,7 +16,7 @@ brew "awscli"
 brew "gh"
 brew "ansible"
 brew "terraform"
-brew "docker"
+brew "docker" if OS.mac?
 brew "mkcert"
 
 # Kubernetes
@@ -31,7 +31,7 @@ brew "kubeseal"
 brew "minikube"
 
 # Dev
-brew "tmux"
+brew "tmux" if OS.mac?
 brew "n"
 brew "pnpm"
 brew "bun"

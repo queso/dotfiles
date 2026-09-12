@@ -384,4 +384,4 @@ pane_history = false
 [[keys.command]]
 key = "prefix+="
 type = "shell"
-command = "/usr/bin/env python3 /Users/josh/.config/herdr/bin/herdr-rebalance"
+command = "sh -c \"$HOME/.config/herdr/bin/herdr-rebalance\""

@@ -1,0 +1,11 @@
+[Unit]
+Description=herdr server
+
+[Service]
+ExecStart=/home/linuxbrew/.linuxbrew/bin/herdr server
+Environment=PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
