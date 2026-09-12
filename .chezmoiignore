@@ -4,6 +4,11 @@ bootstrap.sh
 brew
 tmux
 LICENSE
+
+# LazyVim bookkeeping: records which NEWS.md entries were read, and which
+# extras were toggled in the :LazyExtras UI. The extras set is versioned in
+# lua/config/lazy.lua instead, so this file is pure per-box state.
+.config/nvim/lazyvim.json
 {{ if ne .chezmoi.os "linux" }}
 # Linux-only: systemd user units, and magi's ssh config.
 .config/systemd

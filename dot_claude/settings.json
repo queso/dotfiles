@@ -3,34 +3,6 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "model": "opus",
-  "statusLine": {
-    "type": "command",
-    "command": "bash $HOME/.claude/statusline-command.sh"
-  },
-  "enabledPlugins": {
-    "ai-code-audit@ai-code-audit": true,
-    "ai-team@the-ai-team-plugin": true,
-    "devtrack@devtrack": true,
-    "frontend-design@claude-plugins-official": true,
-    "playwright@claude-plugins-official": false,
-    "vercel@claude-plugins-official": true
-  },
-  "extraKnownMarketplaces": {
-    "ai-code-audit": {
-      "source": {
-        "source": "directory",
-        "path": "/home/josh/Code/TheAITeam/ai-code-audit"
-      }
-    },
-    "devtrack": {
-      "source": {
-        "source": "github",
-        "repo": "queso/DevTrack"
-      }
-    }
-  },
-  "alwaysThinkingEnabled": true,
-  "skipDangerousModePermissionPrompt": true,
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -105,7 +77,35 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "bash $HOME/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "ai-code-audit@ai-code-audit": true,
+    "ai-team@the-ai-team-plugin": true,
+    "devtrack@devtrack": true,
+    "frontend-design@claude-plugins-official": true,
+    "playwright@claude-plugins-official": false,
+    "vercel@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "ai-code-audit": {
+      "source": {
+        "source": "directory",
+        "path": "/home/josh/Code/TheAITeam/ai-code-audit"
+      }
+    },
+    "devtrack": {
+      "source": {
+        "source": "github",
+        "repo": "queso/DevTrack"
+      }
+    }
+  },
   "feedbackDrafts": "off",
+  "alwaysThinkingEnabled": true,
   "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
   "agentPushNotifEnabled": true
 }

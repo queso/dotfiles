@@ -38,6 +38,13 @@ brew "n"
 brew "pnpm"
 brew "bun"
 
+# Editor (LazyVim: ripgrep + fd are its pickers, lazygit is <leader>gg)
+brew "neovim"
+brew "ripgrep"
+brew "fd"
+brew "lazygit"
+brew "tree-sitter-cli"  # nvim-treesitter main branch compiles parsers with it
+
 # Agent runtime (see README: herdr)
 brew "herdr"
 brew "rustup"  # builds the herdmates plugin
