@@ -1,0 +1,7 @@
+#!/bin/bash
+# Italic-capable terminfo entries for tmux. Re-runs when the sources change.
+# {{ include "tmux/terminfo/tmux-256color-italic.terminfo" | sha256sum }} {{ include "tmux/terminfo/xterm-256color-italic.terminfo" | sha256sum }}
+set -e
+for ti in "{{ .chezmoi.sourceDir }}"/tmux/terminfo/*.terminfo; do
+  [ -f "$ti" ] && tic -x "$ti"
+done

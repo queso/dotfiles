@@ -1,0 +1,11 @@
+#!/bin/bash
+# herdmates (teammux shim) from the patched fork, until caioniehues/herdmates#136 merges.
+set -e
+[ -x /home/linuxbrew/.linuxbrew/bin/brew ] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+[ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
+[ -x "$HOME/.local/bin/herdmates" ] && exit 0
+rustup default stable >/dev/null 2>&1 || true
+export PATH="$HOME/.cargo/bin:$(ls -d "$HOME"/.rustup/toolchains/stable-*/bin 2>/dev/null | head -1):$PATH"
+[ -d "$HOME/Code/OpenSource/herdmates" ] || git clone -q -b lead-width-override https://github.com/queso/herdmates "$HOME/Code/OpenSource/herdmates"
+herdr plugin link "$HOME/Code/OpenSource/herdmates" >/dev/null 2>&1 || true
+( cd "$HOME/Code/OpenSource/herdmates" && cargo install -q --path . --root "$HOME/.local" )

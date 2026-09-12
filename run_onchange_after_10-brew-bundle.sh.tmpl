@@ -1,0 +1,9 @@
+#!/bin/bash
+# Tool tier from the shared Brewfile. Re-runs whenever the Brewfile changes.
+# Brewfile hash: {{ include "brew/Brewfile" | sha256sum }}
+set -e
+[ -x /home/linuxbrew/.linuxbrew/bin/brew ] && eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+[ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
+# Third-party taps need trust once per machine before bundle can use them.
+brew trust derailed/k9s hashicorp/tap 2>/dev/null || true
+brew bundle --file="{{ .chezmoi.sourceDir }}/brew/Brewfile"

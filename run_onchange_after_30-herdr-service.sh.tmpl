@@ -1,0 +1,11 @@
+#!/bin/bash
+# herdr server as a service with a clean environment. Never start it from a
+# shell inside a Claude session. Re-runs when the unit files change.
+# {{ include "dot_config/systemd/user/herdr.service" | sha256sum }} {{ include "dot_config/systemd/user/herdr@.service" | sha256sum }}
+set -e
+{{ if eq .chezmoi.os "linux" -}}
+systemctl --user daemon-reload
+systemctl --user enable --now herdr >/dev/null 2>&1 || true
+{{ else -}}
+brew services list 2>/dev/null | grep -q '^herdr.*started' || brew services start herdr
+{{ end -}}

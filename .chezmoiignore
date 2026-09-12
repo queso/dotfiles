@@ -1,0 +1,11 @@
+# Not targets: repo plumbing and script inputs.
+README.md
+bootstrap.sh
+brew
+tmux
+LICENSE
+{{ if ne .chezmoi.os "linux" }}
+# Linux-only: systemd user units for herdr, and magi's ssh config.
+.config/systemd
+.ssh/config
+{{ end }}

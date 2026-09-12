@@ -1,0 +1,17 @@
+#!/bin/bash
+# System tier: what the OS package manager owns. Everything else comes from the
+# shared Brewfile (see run_onchange_after_10-brew-bundle.sh.tmpl).
+set -e
+{{ if eq .chezmoi.os "linux" -}}
+if command -v apt-get >/dev/null 2>&1; then
+  sudo apt-get update -qq
+  sudo apt-get install -y -qq git curl zsh build-essential docker.io
+fi
+if [ ! -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+{{ else -}}
+if ! command -v brew >/dev/null 2>&1; then
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+{{ end -}}
