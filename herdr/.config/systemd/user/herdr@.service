@@ -1,0 +1,13 @@
+# One herdr server per named session ("house"): systemctl --user enable --now herdr@<name>
+[Unit]
+Description=herdr server, session %i
+After=default.target
+
+[Service]
+ExecStart=/home/linuxbrew/.linuxbrew/bin/herdr --session %i server
+Environment=PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
