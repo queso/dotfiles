@@ -50,7 +50,31 @@ claude
 | `vim` | `.vimrc`, `.gvimrc`, `.vim/` (vim-plug, plugins installed on setup) |
 | `claude` | Claude Code settings, statusline, custom agents, screenshot relay hook |
 | `ssh` | SSH config (screenshot relay ControlMaster for magi → Mac) |
+| `claude` | Claude Code settings, statusline, custom agents, `hooks/` (herdr agent-state hook) |
 | `brew` | `Brewfile` for Homebrew |
+| `herdr` | `.config/herdr/config.toml` (ctrl+j prefix, `prefix+=` rebalance) and `bin/herdr-rebalance` |
+
+## herdr (agent runtime)
+
+Stowed config covers the prefix key and the rebalance binding. The rest is a one-time
+setup per machine, after `brew bundle`:
+
+```bash
+brew services start herdr                 # server under launchd (Linux: a systemd user unit + enable-linger)
+herdr integration install claude          # rewrites ~/.claude/hooks/herdr-agent-state.sh (already stowed) + settings hook
+git clone git@github.com:queso/herdmates ~/Code/OpenSource/herdmates && cd ~/Code/OpenSource/herdmates
+git checkout lead-width-override          # until caioniehues/herdmates#136 merges
+herdr plugin link ~/Code/OpenSource/herdmates
+cargo install --path . --root ~/.local    # plugin link does not build; needs rustup's toolchain bin on PATH
+```
+
+Never start `herdr server` from inside a Claude Code session: panes inherit
+`CLAUDE_CODE_CHILD_SESSION`, transcript saving turns off, and restart resume dies.
+
+The `claude()` function in `shell/.aliases` routes through the herdmates shim only inside a
+herdr pane and sets `TEAMMUX_LEAD_WIDTH=50` (the lead's share at spawn). `prefix+=` equalizes
+every pane afterwards. The rebalance binding in `config.toml` uses an absolute path; edit it on
+a machine whose home is not `/Users/josh`.
 
 ## Screenshot Relay (magi only)
 
@@ -83,6 +107,7 @@ The SSH config (`~/.ssh/config`) and hook script (`~/.claude/hooks/screenshot-re
 - `~/.ssh/screenshot_relay*` — SSH keys (regenerate per machine)
 - `~/.kube/config` — K8s contexts (rebuilt from infra)
 - `~/.claude/projects/` — session data, rebuilds naturally
+- `~/.config/herdr/` runtime files (sockets, logs, `session.json`, `plugins/`) — only `config.toml` and `bin/` are stowed
 
 ## Adding New Files
 

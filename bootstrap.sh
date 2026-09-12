@@ -26,7 +26,7 @@ fi
 
 # Link all packages
 cd "$DOTFILES"
-stow -t ~ --adopt shell git tmux vim claude brew
+stow -t ~ --adopt shell git tmux vim claude brew herdr
 # Reset any adopted files back to repo versions
 git checkout .
 

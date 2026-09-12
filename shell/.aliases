@@ -1,9 +1,38 @@
 alias gca="git commit --amend --author='Josh Owens <joshua.owens@gmail.com>'"
 
 # SSH into magi and attach/create a named tmux session
+# Usage: magi ls           — list running sessions
+#        magi [session] [dir] — attach/create session
 magi() {
+  if [[ "${1:-}" == "ls" ]]; then
+    ssh magi.theowens.casa "tmux list-sessions 2>/dev/null || echo 'No sessions running'"
+    return
+  fi
+
   local session="${1:-default}"
-  ssh -t magi.theowens.casa "tmux new-session -As $session"
+  local dir="${2:-}"
+  local watcher_pid=""
+
+  # Start sidebar status watcher if running inside cmux
+  if [[ -n "${CMUX_WORKSPACE_ID:-}" ]]; then
+    ~/.claude-magi-watcher.sh "$CMUX_WORKSPACE_ID" 3 &
+    watcher_pid=$!
+    disown "$watcher_pid" 2>/dev/null
+  fi
+
+  local tmux_cmd="tmux new-session -As $session"
+  if [[ -n "$dir" ]]; then
+    # Replace local home path with $HOME so it expands on the remote side
+    dir="${dir/#$HOME/\$HOME}"
+    tmux_cmd="tmux new-session -As $session -c $dir"
+  fi
+
+  ssh -t magi.theowens.casa "$tmux_cmd"
+
+  # Clean up watcher when SSH exits
+  if [[ -n "$watcher_pid" ]]; then
+    kill "$watcher_pid" 2>/dev/null || true
+  fi
 }
 
 # Encrypt/decrypt CBT therapy files with age
@@ -35,3 +64,15 @@ mdread() { tmux split-window -h "glow -p '$1'"; }
 
 # Preview code in a tmux split pane with syntax highlighting
 coderead() { tmux split-window -h "batcat --paging=always '$1'"; }
+# herdr: inside a herdr pane, launch claude through the herdmates teammux shim so
+# agent-team teammates open as real herdr panes. Outside herdr this is a no-op.
+# Added 2026-09-12 during the herdr local test.
+claude() {
+  if [[ -n "$HERDR_PANE_ID" && -x "$HOME/.local/bin/herdmates" ]]; then
+    # Lead pane share of the tab for split-pane teams (patched shim; Claude Code's own default is 30).
+    export TEAMMUX_LEAD_WIDTH="${TEAMMUX_LEAD_WIDTH:-50}"
+    "$HOME/.local/bin/herdmates" teammux-launch "$@"
+  else
+    command claude "$@"
+  fi
+}
