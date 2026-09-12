@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Nightly: pull in-place edits of chezmoi-managed files into the dotfiles repo, commit, push.
+# Drift becomes a commit tagged with the box instead of a mystery.
+set -uo pipefail
+export PATH="/opt/homebrew/bin:/home/linuxbrew/.linuxbrew/bin:$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin"
+log="$HOME/.local/state/chezmoi-readd.log"; mkdir -p "$(dirname "$log")"
+src=$(chezmoi source-path 2>/dev/null) || exit 0
+chezmoi re-add >>"$log" 2>&1 || true
+cd "$src" || exit 0
+git add -u
+git diff --cached --quiet && exit 0
+git commit -q -m "re-add from $(hostname -s) $(date +%F)" >>"$log" 2>&1 || exit 0
+branch=$(git rev-parse --abbrev-ref HEAD)
+if git pull -q --rebase origin "$branch" >>"$log" 2>&1 && git push -q origin HEAD >>"$log" 2>&1; then
+  echo "$(date +%FT%T) pushed re-add from $(hostname -s)" >>"$log"
+else
+  echo "$(date +%FT%T) push failed on $(hostname -s); resolve by hand in $src" >>"$log"
+fi

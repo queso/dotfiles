@@ -13,3 +13,7 @@ Rules:
 - No stock metaphors or business words: under the hood, heavy lifting, north star, silver bullet, move the needle, low-hanging fruit, table stakes, rabbit hole, sweet spot, journey, landscape, unlock, leverage, robust, seamless, crucial, delve, deep dive.
 - No closers like "hope this helps" or "let me know if."
 - In emails and proposals: do not guess what the reader is probably doing or feeling. Do not cite "most teams I talk to." Do not ask "worth 20 minutes?"; write the full question. Do not use "unglamorous," "expensive mistakes," "so you don't have to," "no need to reply," or "no worries."
+
+# Config files
+
+Dotfiles on every box are managed by chezmoi with the source repo at ~/dotfiles. Edit the copies in $HOME (.zshrc, .aliases, .gitconfig, .claude/settings.json, .config/herdr/*) directly, then run `chezmoi re-add` and commit in ~/dotfiles. A SessionStart hook reports drift at the start of every session; a nightly job re-adds and pushes. Never symlink into the repo and never use stow.

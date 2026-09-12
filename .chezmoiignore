@@ -5,7 +5,11 @@ brew
 tmux
 LICENSE
 {{ if ne .chezmoi.os "linux" }}
-# Linux-only: systemd user units for herdr, and magi's ssh config.
+# Linux-only: systemd user units, and magi's ssh config.
 .config/systemd
 .ssh/config
+{{ end }}
+{{ if ne .chezmoi.os "darwin" }}
+# macOS-only: launchd agent for the nightly re-add.
+Library
 {{ end }}

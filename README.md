@@ -1,134 +1,55 @@
 # dotfiles
 
-Personal dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/). Works on macOS and Linux (Ubuntu).
+Managed with [chezmoi](https://www.chezmoi.io). Source repo is `~/dotfiles` (this repo),
+targets are real files in `$HOME`. macOS and Linux (Ubuntu now; Rocky and Arch later).
 
-## New Machine Setup
-
-### 1. SSH key
-
-```bash
-ssh-keygen -t ed25519
-# Add ~/.ssh/id_ed25519.pub to GitHub
-```
-
-### 2. Bootstrap
+## New machine
 
 ```bash
-git clone git@github.com:queso/dotfiles.git ~/dotfiles
-~/dotfiles/bootstrap.sh
+ssh-keygen -t ed25519     # add the public key to GitHub
+curl -fsSL https://raw.githubusercontent.com/queso/dotfiles/main/bootstrap.sh | bash
 ```
 
-That's it. The bootstrap script handles:
-- Installing stow and linking all packages
-- Installing platform packages (brew on mac, apt on linux)
-- vim-plug and all vim plugins
-- Claude Code (native installer)
-- oh-my-zsh
+That installs chezmoi, clones this repo to `~/dotfiles`, applies every managed file, and runs the
+scripts in order: system packages (apt on Linux, Homebrew everywhere), the shared `brew/Brewfile`
+(install-only, re-run when the Brewfile changes), tmux terminfo, the herdr service, the herdmates
+plugin. Then by hand: Dank Mono (paid font), `~/.env.local`, `claude` to authenticate.
 
-### 3. Manual steps after bootstrap
+## Day to day
 
-```bash
-# Secrets (copy from password manager)
-vim ~/.env.local
+- Edit files in `$HOME`, then `chezmoi re-add` and commit here. Or `chezmoi edit --apply <file>`.
+- `chezmoi status` shows drift; `chezmoi diff` shows it in full; `chezmoi apply` discards it.
+- A Claude Code SessionStart hook (`.claude/hooks/chezmoi-drift.sh`) puts any drift into every
+  agent session's context. A nightly job (`~/.local/bin/chezmoi-readd`, launchd on macOS,
+  systemd timer on Linux) re-adds, commits as `re-add from <host>`, and pushes.
+- Per-box files that are never in the repo: `~/.gitconfig.local` (included from `.gitconfig`),
+  `~/.claude/settings.local.json` (model, autoUpdates, permissions), `~/.env.local`.
 
-# Brain repo + Claude memory symlink
-git clone git@github.com:queso/Brain ~/Code/Brain
-mkdir -p ~/.claude/projects/-Users-$(whoami)-Code-Brain
-ln -s ~/Code/Brain/.claude/memory ~/.claude/projects/-Users-$(whoami)-Code-Brain/memory
+## Layout
 
-# Authenticate Claude Code
-claude
-```
+| source | target |
+|---|---|
+| `dot_zshrc`, `dot_zshenv`, `dot_zprofile`, `dot_aliases`, `dot_oh-my-zsh/` | shell |
+| `dot_gitconfig`, `dot_gitignore_global` | git (box-specific bits in `~/.gitconfig.local`) |
+| `dot_tmux.conf`; `tmux/terminfo/` are sources for the terminfo script | tmux |
+| `dot_vimrc`, `dot_gvimrc`, `dot_vim/` (plugins install into `~/.vim/plugged` per box) | vim |
+| `dot_claude/` (settings, CLAUDE.md, agents, commands, hooks, statusline) | Claude Code |
+| `dot_config/herdr/` (config with ctrl+j prefix and `prefix+=` rebalance, `bin/herdr-rebalance`) | herdr |
+| `dot_config/systemd/user/` (Linux only): `herdr`, `herdr@<house>`, `chezmoi-readd.timer` | services |
+| `Library/LaunchAgents/` (macOS only): nightly re-add | services |
+| `dot_ssh/config` (Linux only, magi's) | ssh |
+| `brew/Brewfile` | not a target; consumed by the bundle script |
 
-## Packages
+## herdr
 
-| Package | Contents |
-|---------|----------|
-| `shell` | `.zshrc`, `.zshenv`, `.zprofile`, `.aliases` |
-| `git` | `.gitconfig`, `.gitignore_global` |
-| `tmux` | `.tmux.conf`, terminfo files |
-| `vim` | `.vimrc`, `.gvimrc`, `.vim/` (vim-plug, plugins installed on setup) |
-| `claude` | Claude Code settings, statusline, custom agents, screenshot relay hook |
-| `ssh` | SSH config (screenshot relay ControlMaster for magi → Mac) |
-| `claude` | Claude Code settings, statusline, custom agents, `hooks/` (herdr agent-state hook) |
-| `brew` | `Brewfile` for Homebrew |
-| `herdr` | `.config/herdr/config.toml` (ctrl+j prefix, `prefix+=` rebalance), `bin/herdr-rebalance`, and `.config/systemd/user/herdr.service` (Linux) |
+macOS runs the server under `brew services`; Linux under `systemctl --user` (`herdr` for the
+default session, `herdr@<house>` per named session). Never start `herdr server` from inside a
+Claude session: panes inherit `CLAUDE_CODE_CHILD_SESSION`, transcript saving turns off, and
+restart resume dies. The `claude()` function in `dot_aliases` routes through the herdmates shim
+inside herdr panes and sets `TEAMMUX_LEAD_WIDTH=50`. `magi <house> [<room> [dir]]` attaches to
+a house on magi.
 
-`brew/Brewfile` pulls formulae from two third-party taps (`derailed/k9s`, `hashicorp/tap`).
-Homebrew requires trusting a tap once per machine before it will load formulae from it:
-`brew trust derailed/k9s hashicorp/tap`. `install.sh` does this automatically on Linux; on
-macOS `bootstrap.sh`/`brew bundle` does not, so run it by hand before the first `brew bundle`.
+## Not tracked
 
-## herdr (agent runtime)
-
-Stowed config covers the prefix key and the rebalance binding. The rest is a one-time
-setup per machine, after `brew bundle`:
-
-```bash
-brew services start herdr                 # macOS: server under launchd
-herdr integration install claude          # rewrites ~/.claude/hooks/herdr-agent-state.sh (already stowed) + settings hook
-git clone git@github.com:queso/herdmates ~/Code/OpenSource/herdmates && cd ~/Code/OpenSource/herdmates
-git checkout lead-width-override          # until caioniehues/herdmates#136 merges
-herdr plugin link ~/Code/OpenSource/herdmates
-cargo install --path . --root ~/.local    # plugin link does not build; needs rustup's toolchain bin on PATH
-```
-
-On Linux there's no launchd, so the server runs under a systemd user unit instead of
-`brew services`: `systemctl --user enable --now herdr`. The unit file
-(`.config/systemd/user/herdr.service`) is part of the `herdr` package and gets stowed like
-everything else. Never start `herdr server` by hand from a shell; running it outside the
-unit leaks session environment (e.g. `CLAUDE_CODE_CHILD_SESSION`) into every pane.
-
-Never start `herdr server` from inside a Claude Code session: panes inherit
-`CLAUDE_CODE_CHILD_SESSION`, transcript saving turns off, and restart resume dies.
-
-The `claude()` function in `shell/.aliases` routes through the herdmates shim only inside a
-herdr pane and sets `TEAMMUX_LEAD_WIDTH=50` (the lead's share at spawn). `prefix+=` equalizes
-every pane afterwards. The rebalance binding in `config.toml` resolves `$HOME` at runtime, so
-it works unchanged on any machine.
-
-## Screenshot Relay (magi only)
-
-Drag-and-drop screenshots into remote Claude Code sessions over SSH+tmux. A `UserPromptSubmit` hook detects macOS screenshot paths in prompts, SFTPs the image from the Mac, and rewrites the path to a local `/tmp/screenshots/` path.
-
-### Setup on a fresh magi
-
-```bash
-# 1. Install avahi-daemon for mDNS resolution
-sudo apt install avahi-daemon
-
-# 2. Generate dedicated SSH key (read-only, SFTP-only)
-ssh-keygen -t ed25519 -f ~/.ssh/screenshot_relay -N "" -C "magi-screenshot-relay"
-
-# 3. Add public key to Mac's ~/.ssh/authorized_keys (replace YOUR_KEY):
-#    command="/usr/libexec/sftp-server",no-pty,no-agent-forwarding,no-port-forwarding,from="MAGI_IP" YOUR_KEY
-
-# 4. Verify connection
-sftp macbook <<< "ls /Users/josh/Desktop"
-
-# 5. Add cron cleanup (daily 3am, 24hr TTL)
-echo '0 3 * * * find /tmp/screenshots -type f -mmin +1440 -delete 2>/dev/null' | crontab -
-```
-
-The SSH config (`~/.ssh/config`) and hook script (`~/.claude/hooks/screenshot-relay.sh`) are managed by stow. The SSH key is per-machine — regenerate it and add to the Mac each time.
-
-## Files Not Tracked
-
-- `~/.env.local` — API keys and secrets
-- `~/.ssh/screenshot_relay*` — SSH keys (regenerate per machine)
-- `~/.kube/config` — K8s contexts (rebuilt from infra)
-- `~/.claude/projects/` — session data, rebuilds naturally
-- `~/.config/herdr/` runtime files (sockets, logs, `session.json`, `plugins/`) — only `config.toml` and `bin/` are stowed
-
-## Adding New Files
-
-```bash
-# Add to an existing package
-cp ~/.some-config ~/dotfiles/shell/.some-config
-cd ~/dotfiles && stow -R -t ~ shell
-
-# Or create a new package
-mkdir ~/dotfiles/newpkg
-cp ~/.whatever ~/dotfiles/newpkg/.whatever
-cd ~/dotfiles && stow -t ~ newpkg
-```
+`~/.ssh/` keys, `~/.kube/config`, `~/.claude/` runtime state (projects, plugins, credentials),
+`~/.config/herdr/` runtime files (sockets, logs, session.json, plugins).
