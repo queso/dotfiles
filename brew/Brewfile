@@ -10,6 +10,7 @@ brew "fzf"
 brew "parallel"
 brew "age"
 brew "glow"
+brew "direnv"
 
 # Cloud & infra
 brew "awscli"

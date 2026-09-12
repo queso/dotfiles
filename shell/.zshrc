@@ -30,7 +30,7 @@ fi
 [ -s "/tmp/bunlatest/_bun" ] && source "/tmp/bunlatest/_bun"
 
 # direnv (per-directory env, e.g. KUBECONFIG per cluster repo)
-eval "$(direnv hook zsh)"
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 
 # gpg-agent's ssh socket uses pinentry-curses; it can only prompt on a tty it
 # knows about. Without this, ssh-add against the gnupg socket fails with
