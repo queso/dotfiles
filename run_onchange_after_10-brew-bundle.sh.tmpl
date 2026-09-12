@@ -6,4 +6,4 @@ set -e
 [ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
 # Third-party taps need trust once per machine before bundle can use them.
 brew trust derailed/k9s hashicorp/tap 2>/dev/null || true
-brew bundle --file="{{ .chezmoi.sourceDir }}/brew/Brewfile"
+brew bundle --no-upgrade --file="{{ .chezmoi.sourceDir }}/brew/Brewfile"

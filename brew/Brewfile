@@ -16,7 +16,8 @@ brew "direnv"
 brew "awscli"
 brew "gh"
 brew "ansible"
-brew "hashicorp/tap/terraform"
+# Mac stays on core terraform 1.5.7 (state-file version risk); tap version on Linux only until Josh decides tap vs opentofu.
+brew "hashicorp/tap/terraform" if OS.linux?
 brew "docker" if OS.mac?
 brew "mkcert"
 
