@@ -34,36 +34,38 @@ magi-tmux() {
   fi
 }
 
-# magi through herdr. magi is a saved machine in the local herdr, so the sidebar
-# already shows its workspaces; these are the terminal-prompt equivalents.
-#   magi ls              list magi's herdr workspaces (id, agent status, label)
-#   magi                 open the herdr TUI attached straight to magi's server
-#   magi <label> [dir]   focus the workspace with that label on magi, creating it
-#                        at dir if missing, then attach. Detach: ctrl+j q.
+# magi through herdr. magi runs one herdr server per "house" (a named session);
+# rooms are workspaces inside a house. Houses (9/12): autocut shop-flows
+# print-farm shops clients dev-marketing ai-team-plugin workflow conduit brain infra.
+#   magi ls                     houses, each with its rooms and agent status
+#   magi <house>                attach the herdr TUI to that house on magi (detach: ctrl+j q)
+#   magi <house> <room> [dir]   focus the room in that house, creating it at dir if missing, then attach
 # Listing and creating go over ssh with a login shell (brew shellenv); attach is
-# `herdr --remote`, which only works with the bare TUI launch.
+# `herdr --remote`, which only works with the bare TUI launch. The local herdr
+# keeps the magi machine profile disabled so the local sidebar stays local.
 magi() {
   local remote=(ssh -o BatchMode=yes magi.local)
   case "${1:-}" in
     ls)
-      "${remote[@]}" 'zsh -lc "herdr workspace list"' \
-        | jq -r '.result.workspaces[] | "\(.workspace_id)\t\(.agent_status)\t\(.label)"'
+      "${remote[@]}" 'zsh -lc "for h in \$(herdr session list --json | jq -r \".[] | select(.status==\\\"running\\\") | .name\"); do [ \"\$h\" = default ] && continue; printf \"%-15s\" \"\$h\"; herdr --session \"\$h\" workspace list | jq -r \"[.result.workspaces[] | .label + \\\"(\\\" + .agent_status + \\\")\\\"] | join(\\\"  \\\")\"; done"'
       ;;
     "")
-      herdr --remote magi.local
+      echo "usage: magi ls | magi <house> | magi <house> <room> [dir]" >&2; return 1
       ;;
     *)
-      local label="$1" dir="${2:-}" id
-      id=$("${remote[@]}" 'zsh -lc "herdr workspace list"' \
-        | jq -r --arg l "$label" '.result.workspaces[] | select(.label==$l) | .workspace_id' | head -1)
-      if [[ -z "$id" ]]; then
-        dir="${dir/#$HOME/\$HOME}"
-        id=$("${remote[@]}" "zsh -lc \"herdr workspace create --label '$label' ${dir:+--cwd $dir}\"" \
-          | jq -r '.result.workspace.workspace_id')
-        [[ -n "$id" && "$id" != null ]] || { echo "magi: could not create workspace '$label'" >&2; return 1; }
+      local house="$1" room="${2:-}" dir="${3:-}" id
+      if [[ -n "$room" ]]; then
+        id=$("${remote[@]}" "zsh -lc \"herdr --session $house workspace list\"" \
+          | jq -r --arg l "$room" '.result.workspaces[] | select(.label==$l) | .workspace_id' | head -1)
+        if [[ -z "$id" ]]; then
+          dir="${dir/#$HOME/\$HOME}"
+          id=$("${remote[@]}" "zsh -lc \"herdr --session $house workspace create --label '$room' ${dir:+--cwd $dir}\"" \
+            | jq -r '.result.workspace.workspace_id')
+          [[ -n "$id" && "$id" != null ]] || { echo "magi: could not create room '$room' in house '$house'" >&2; return 1; }
+        fi
+        "${remote[@]}" "zsh -lc \"herdr --session $house workspace focus $id\"" >/dev/null
       fi
-      "${remote[@]}" "zsh -lc \"herdr workspace focus $id\"" >/dev/null
-      herdr --remote magi.local
+      herdr --remote magi.local --session "$house"
       ;;
   esac
 }
