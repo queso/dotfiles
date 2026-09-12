@@ -57,7 +57,7 @@ cbt_unlock() {
 }
 
 # Claude Code with bypass permissions (you only live once)
-alias cyolo='claude --dangerously-skip-permissions'
+alias cyolo='claude --dangerously-skip-permissions --teammate-mode tmux'
 
 # Preview markdown in a tmux split pane with glow
 mdread() { tmux split-window -h "glow -p '$1'"; }
@@ -74,5 +74,14 @@ claude() {
     "$HOME/.local/bin/herdmates" teammux-launch "$@"
   else
     command claude "$@"
+  fi
+}
+
+# Copy to Mac clipboard over SSH via OSC 52 (pipe or file)
+rcopy() {
+  if [ $# -eq 1 ] && [ -f "$1" ]; then
+    printf '\033]52;c;%s\a' "$(base64 -w 0 < "$1")"
+  else
+    printf '\033]52;c;%s\a' "$(base64 -w 0 < /dev/stdin)"
   fi
 }

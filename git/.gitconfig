@@ -8,7 +8,7 @@
   status = auto
 [core]
 	editor = vim
-  excludesfile = /Users/josh/.gitignore_global
+  excludesfile = ~/.gitignore_global
 [github]
   user = queso
 [heroku]
@@ -31,3 +31,8 @@
 	defaultBranch = main
 [url "git@github.com:"]
 	insteadOf = https://github.com/~
+
+# Per-box settings (signing keys, hook paths, credential helpers) live here.
+# Untracked, outside the repo. Later includes win, so this overrides the above.
+[include]
+	path = ~/.gitconfig.local

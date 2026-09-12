@@ -1,0 +1,34 @@
+# Claude Code writes its runtime state into this repo, because ~/.claude is a
+# folded stow symlink to claude/.claude. None of it belongs in git.
+
+# Credentials. Never commit these.
+claude/.claude/.credentials.json
+claude/.claude/.credentials.json*
+
+# Per-machine Claude Code overrides (model, autoUpdates, permissions).
+claude/.claude/settings.local.json
+
+# Symlink farm into ~/.agents, not content of this repo.
+claude/.claude/skills/
+
+# Runtime state and caches.
+claude/.claude/projects/
+claude/.claude/plugins/
+claude/.claude/sessions/
+claude/.claude/shell-snapshots/
+claude/.claude/file-history/
+claude/.claude/teams/
+claude/.claude/tasks/
+claude/.claude/backups/
+claude/.claude/cache/
+claude/.claude/paste-cache/
+claude/.claude/feedback/
+claude/.claude/plans/
+claude/.claude/history.jsonl
+claude/.claude/weather-cache.txt
+claude/.claude/.last-*
+
+# Stale backups left by tooling.
+claude/.claude/settings.json.bak
+claude/.claude/settings.json.handoff-backup
+*.sftp.bak
