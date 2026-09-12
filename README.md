@@ -54,6 +54,11 @@ claude
 | `brew` | `Brewfile` for Homebrew |
 | `herdr` | `.config/herdr/config.toml` (ctrl+j prefix, `prefix+=` rebalance), `bin/herdr-rebalance`, and `.config/systemd/user/herdr.service` (Linux) |
 
+`brew/Brewfile` pulls formulae from two third-party taps (`derailed/k9s`, `hashicorp/tap`).
+Homebrew requires trusting a tap once per machine before it will load formulae from it:
+`brew trust derailed/k9s hashicorp/tap`. `install.sh` does this automatically on Linux; on
+macOS `bootstrap.sh`/`brew bundle` does not, so run it by hand before the first `brew bundle`.
+
 ## herdr (agent runtime)
 
 Stowed config covers the prefix key and the rebalance binding. The rest is a one-time

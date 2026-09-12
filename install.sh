@@ -21,6 +21,9 @@ elif command -v apt-get &>/dev/null; then
   fi
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
+  # Third-party taps require a one-time trust grant before brew will load their formulae.
+  brew trust derailed/k9s hashicorp/tap 2>/dev/null || true
+
   echo "Installing packages via Homebrew..."
   brew bundle --file="$(dirname "$0")/brew/Brewfile"
 fi

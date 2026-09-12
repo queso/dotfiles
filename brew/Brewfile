@@ -1,5 +1,5 @@
-tap "homebrew/bundle"
 tap "derailed/k9s"
+tap "hashicorp/tap"
 
 # Core tools
 brew "git"
@@ -15,7 +15,7 @@ brew "glow"
 brew "awscli"
 brew "gh"
 brew "ansible"
-brew "terraform"
+brew "hashicorp/tap/terraform"
 brew "docker" if OS.mac?
 brew "mkcert"
 
