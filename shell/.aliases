@@ -1,9 +1,8 @@
 alias gca="git commit --amend --author='Josh Owens <joshua.owens@gmail.com>'"
 
-# SSH into magi and attach/create a named tmux session
-# Usage: magi ls           — list running sessions
-#        magi [session] [dir] — attach/create session
-magi() {
+# The old tmux flow, kept until the tmux sessions on magi are retired.
+# Usage: magi-tmux ls | magi-tmux [session] [dir]
+magi-tmux() {
   if [[ "${1:-}" == "ls" ]]; then
     ssh magi.theowens.casa "tmux list-sessions 2>/dev/null || echo 'No sessions running'"
     return
@@ -33,6 +32,40 @@ magi() {
   if [[ -n "$watcher_pid" ]]; then
     kill "$watcher_pid" 2>/dev/null || true
   fi
+}
+
+# magi through herdr. magi is a saved machine in the local herdr, so the sidebar
+# already shows its workspaces; these are the terminal-prompt equivalents.
+#   magi ls              list magi's herdr workspaces (id, agent status, label)
+#   magi                 open the herdr TUI attached straight to magi's server
+#   magi <label> [dir]   focus the workspace with that label on magi, creating it
+#                        at dir if missing, then attach. Detach: ctrl+j q.
+# Listing and creating go over ssh with a login shell (brew shellenv); attach is
+# `herdr --remote`, which only works with the bare TUI launch.
+magi() {
+  local remote=(ssh -o BatchMode=yes magi.local)
+  case "${1:-}" in
+    ls)
+      "${remote[@]}" 'zsh -lc "herdr workspace list"' \
+        | jq -r '.result.workspaces[] | "\(.workspace_id)\t\(.agent_status)\t\(.label)"'
+      ;;
+    "")
+      herdr --remote magi.local
+      ;;
+    *)
+      local label="$1" dir="${2:-}" id
+      id=$("${remote[@]}" 'zsh -lc "herdr workspace list"' \
+        | jq -r --arg l "$label" '.result.workspaces[] | select(.label==$l) | .workspace_id' | head -1)
+      if [[ -z "$id" ]]; then
+        dir="${dir/#$HOME/\$HOME}"
+        id=$("${remote[@]}" "zsh -lc \"herdr workspace create --label '$label' ${dir:+--cwd $dir}\"" \
+          | jq -r '.result.workspace.workspace_id')
+        [[ -n "$id" && "$id" != null ]] || { echo "magi: could not create workspace '$label'" >&2; return 1; }
+      fi
+      "${remote[@]}" "zsh -lc \"herdr workspace focus $id\"" >/dev/null
+      herdr --remote magi.local
+      ;;
+  esac
 }
 
 # Encrypt/decrypt CBT therapy files with age
