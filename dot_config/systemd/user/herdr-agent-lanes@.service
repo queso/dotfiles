@@ -1,0 +1,16 @@
+# Keeps agent tabs readable in one herdr session: systemctl --user enable --now herdr-agent-lanes@<name>
+# The herdr replacement for the tmux after-split-window agent-lanes hook.
+# Linux only; chezmoi ignores .config/systemd on darwin, so this file is edited in the source.
+[Unit]
+Description=herdr agent lanes, session %i
+After=herdr@%i.service
+Wants=herdr@%i.service
+
+[Service]
+ExecStart=%h/.config/herdr/bin/herdr-agent-lanes --session %i
+Environment=PATH=/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

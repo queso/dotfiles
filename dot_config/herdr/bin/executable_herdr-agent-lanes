@@ -1,0 +1,283 @@
+#!/usr/bin/env python3
+"""herdr-agent-lanes — keep agent tabs at a readable pane count.
+
+The herdr replacement for ~/.tmux-agent-lanes.sh (tmux after-split-window hook).
+When a tab grows past a lead pane plus LANE_SIZE teammates, the older group is
+moved into its own tab in the same workspace and tiled 2x2. The lead pane and
+the newest pane stay behind to start the next group.
+
+Usage:
+  herdr-agent-lanes [--session NAME] [--lane-size N] [--dry-run] [--verbose]
+  herdr-agent-lanes --once            # sweep current state, then exit
+
+Talks the herdr socket API directly (newline JSON). One connection subscribes to
+pane.created / pane.closed, another issues calls.
+"""
+
+import argparse
+import json
+import os
+import socket
+import sys
+import time
+
+DEFAULT_LANE_SIZE = 4
+
+
+def socket_path(session):
+    base = os.path.expanduser("~/.config/herdr")
+    if session:
+        return os.path.join(base, "sessions", session, "herdr.sock")
+    return os.path.join(base, "herdr.sock")
+
+
+class Herdr:
+    def __init__(self, path):
+        self.path = path
+        self._n = 0
+
+    def _open(self):
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.connect(self.path)
+        return s
+
+    def call(self, method, params=None):
+        self._n += 1
+        s = self._open()
+        try:
+            f = s.makefile("rwb")
+            req = {"id": "lanes:%d" % self._n, "method": method, "params": params or {}}
+            f.write((json.dumps(req) + "\n").encode())
+            f.flush()
+            line = f.readline()
+        finally:
+            s.close()
+        if not line:
+            raise RuntimeError("no response to %s" % method)
+        msg = json.loads(line)
+        if "error" in msg:
+            raise RuntimeError("%s: %s" % (method, json.dumps(msg["error"])))
+        return msg["result"]
+
+    def subscribe(self, types):
+        s = self._open()
+        f = s.makefile("rwb")
+        req = {
+            "id": "lanes:sub",
+            "method": "events.subscribe",
+            "params": {"subscriptions": [{"type": t} for t in types]},
+        }
+        f.write((json.dumps(req) + "\n").encode())
+        f.flush()
+        first = json.loads(f.readline())
+        if "error" in first:
+            raise RuntimeError("subscribe: %s" % json.dumps(first["error"]))
+        return s, f
+
+
+class Lanes:
+    def __init__(self, herdr, lane_size, dry_run=False, verbose=False):
+        self.h = herdr
+        self.lane_size = lane_size
+        self.dry_run = dry_run
+        self.verbose = verbose
+        # tab_id -> [pane_id, ...] in creation order
+        self.order = {}
+        self.moved = set()
+
+    def log(self, msg):
+        if self.verbose or self.dry_run:
+            print("[lanes] %s" % msg, flush=True)
+
+    def seed(self):
+        """Snapshot existing panes. pane.list returns creation order."""
+        panes = self.h.call("pane.list").get("panes", [])
+        self.order = {}
+        for p in panes:
+            self.order.setdefault(p["tab_id"], []).append(p["pane_id"])
+        self.log("seeded %d tabs, %d panes" % (len(self.order), len(panes)))
+
+    def tab_label(self, tab_id):
+        try:
+            tab = self.h.call("tab.get", {"tab_id": tab_id}).get("tab", {})
+            return tab.get("label") or str(tab.get("number", ""))
+        except RuntimeError:
+            return ""
+
+    def next_lane_label(self, tab_id, workspace_id):
+        """Number lanes from the tabs that exist, so restarts do not reuse a name."""
+        base = "%s-lane" % self.tab_label(tab_id)
+        base = base.lstrip("-")
+        try:
+            tabs = self.h.call("tab.list", {"workspace_id": workspace_id}).get("tabs", [])
+        except RuntimeError:
+            tabs = []
+        n = 1
+        for t in tabs:
+            label = t.get("label") or ""
+            if label.startswith(base):
+                suffix = label[len(base):]
+                if suffix.isdigit():
+                    n = max(n, int(suffix) + 1)
+        return ("%s%d" % (base, n))[:32]
+
+    def shunt(self, tab_id, workspace_id, newest=None):
+        """Move the older middle group out of tab_id into a fresh tab.
+
+        The lead is the tab's first pane (top-left, which is where the
+        orchestrator sits) and `newest` is the pane that triggered the shunt.
+        Both stay behind to start the next group.
+        """
+        panes = self.order.get(tab_id, [])
+        if len(panes) <= self.lane_size + 1:
+            return
+        lead = panes[0]
+        if newest is None or newest not in panes:
+            newest = panes[-1]
+        group = [p for p in panes if p not in (lead, newest)][: self.lane_size]
+        if len(group) < self.lane_size:
+            return
+
+        label = self.next_lane_label(tab_id, workspace_id)
+        self.log("tab %s: lead %s + %d panes -> %s" % (tab_id, lead, len(group), label))
+        if self.dry_run:
+            return
+
+        # First pane opens the lane tab; it becomes that tab's root.
+        res = self.h.call(
+            "pane.move",
+            {
+                "pane_id": group[0],
+                "destination": {
+                    "type": "new_tab",
+                    "workspace_id": workspace_id,
+                    "label": label,
+                },
+                "focus": False,
+            },
+        )
+        mv = res.get("move_result", res)
+        new_tab = mv.get("created_tab", {}).get("tab_id") or mv.get("pane", {}).get("tab_id")
+        ids = [mv.get("pane", {}).get("pane_id", group[0])]
+
+        # 2x2: second right of the first, third below the first, fourth below the second.
+        plan = [("right", 0), ("down", 0), ("down", 1)]
+        for pane_id, (direction, anchor) in zip(group[1:], plan):
+            res = self.h.call(
+                "pane.move",
+                {
+                    "pane_id": pane_id,
+                    "destination": {
+                        "type": "tab",
+                        "tab_id": new_tab,
+                        "split": direction,
+                        "target_pane_id": ids[anchor] if anchor < len(ids) else None,
+                        "ratio": 0.5,
+                    },
+                    "focus": False,
+                },
+            )
+            mv = res.get("move_result", res)
+            ids.append(mv.get("pane", {}).get("pane_id", pane_id))
+
+        self.moved.update(group)
+        self.moved.update(ids)
+        self.order[tab_id] = [p for p in panes if p in (lead, newest)]
+        self.order[new_tab] = ids
+        print(
+            "[lanes] moved %d panes out of %s into %s (%s)"
+            % (len(group), tab_id, new_tab, label),
+            flush=True,
+        )
+
+    def sweep(self):
+        """Apply the rule to current state, for --once and at startup."""
+        for tab_id, panes in list(self.order.items()):
+            if len(panes) > self.lane_size + 1:
+                self.shunt(tab_id, tab_id.split(":")[0])
+
+    def on_pane_created(self, pane):
+        tab_id = pane["tab_id"]
+        pane_id = pane["pane_id"]
+        panes = self.order.setdefault(tab_id, [])
+        if pane_id not in panes:
+            panes.append(pane_id)
+        if len(panes) > self.lane_size + 1:
+            self.shunt(tab_id, pane.get("workspace_id") or tab_id.split(":")[0], newest=pane_id)
+
+    def on_pane_closed(self, pane_id):
+        for panes in self.order.values():
+            if pane_id in panes:
+                panes.remove(pane_id)
+
+    def run(self):
+        sock, f = self.h.subscribe(["pane.created", "pane.closed", "pane.moved"])
+        self.seed()
+        self.sweep()
+        print("[lanes] watching %s (lane size %d)" % (self.h.path, self.lane_size), flush=True)
+        try:
+            for raw in f:
+                if not raw.strip():
+                    continue
+                try:
+                    msg = json.loads(raw)
+                except ValueError:
+                    continue
+                data = msg.get("data") or msg.get("result") or {}
+                kind = msg.get("event") or data.get("type")
+                if kind in ("pane.created", "pane_created"):
+                    pane = data.get("pane")
+                    if pane:
+                        self.on_pane_created(pane)
+                elif kind in ("pane.closed", "pane_closed"):
+                    self.on_pane_closed(data.get("pane_id"))
+                elif kind in ("pane.moved", "pane_moved"):
+                    # Our own moves are already accounted for. Anything else
+                    # (a person dragging a pane) invalidates the order.
+                    moved_id = (data.get("pane") or {}).get("pane_id")
+                    prev_id = data.get("previous_pane_id")
+                    if moved_id in self.moved or prev_id in self.moved:
+                        self.moved.discard(moved_id)
+                        self.moved.discard(prev_id)
+                    else:
+                        self.seed()
+        finally:
+            sock.close()
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--session", help="herdr session name (default: the default session)")
+    ap.add_argument("--lane-size", type=int, default=int(os.environ.get("HERDR_LANE_SIZE", DEFAULT_LANE_SIZE)))
+    ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--verbose", action="store_true")
+    ap.add_argument("--once", action="store_true", help="sweep current state and exit")
+    args = ap.parse_args()
+
+    path = socket_path(args.session)
+    if not os.path.exists(path):
+        if args.once:
+            sys.exit("no herdr socket at %s" % path)
+        # Started before its herdr server (systemd ordering is not a guarantee).
+        print("[lanes] waiting for %s" % path, flush=True)
+        while not os.path.exists(path):
+            time.sleep(2)
+
+    h = Herdr(path)
+    lanes = Lanes(h, args.lane_size, args.dry_run, args.verbose)
+
+    if args.once:
+        lanes.seed()
+        lanes.sweep()
+        return
+
+    while True:
+        try:
+            lanes.run()
+        except (ConnectionError, RuntimeError, OSError) as e:
+            print("[lanes] reconnecting after %s" % e, file=sys.stderr, flush=True)
+            time.sleep(3)
+
+
+if __name__ == "__main__":
+    main()
