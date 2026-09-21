@@ -116,6 +116,12 @@
         "source": "github",
         "repo": "queso/DevTrack"
       }
+    },
+    "the-ai-team-plugin": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/josh/Code/The-Ai-team"
+      }
     }
   },
   "feedbackDrafts": "off",
