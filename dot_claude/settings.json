@@ -1,8 +1,10 @@
 {
   "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CP_MODE": "shadow",
+    "CP_WORKLOAD": "interactive"
   },
-  "model": "opus",
+  "model": "fable",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -72,6 +74,19 @@
             "type": "command",
             "command": "[ -x $HOME/.local/bin/herdmates ] && $HOME/.local/bin/herdmates hook TaskCompleted || true",
             "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/josh/Code/TheAITeam/skim/bin/cp-hook.ts",
+            "args": [],
+            "timeout": 5
           }
         ]
       }
