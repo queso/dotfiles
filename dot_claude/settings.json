@@ -128,5 +128,10 @@
   "alwaysThinkingEnabled": true,
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "medium"
+    }
+  }
 }
