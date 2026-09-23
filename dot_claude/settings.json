@@ -4,7 +4,7 @@
     "CP_MODE": "shadow",
     "CP_WORKLOAD": "interactive"
   },
-  "model": "fable",
+  "model": "opus",
   "hooks": {
     "UserPromptSubmit": [
       {
