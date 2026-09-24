@@ -101,22 +101,11 @@
         "source": "github",
         "repo": "queso/DevTrack"
       }
-    },
-    "the-ai-team-plugin": {
-      "source": {
-        "source": "directory",
-        "path": "/Users/josh/Code/The-Ai-team"
-      }
     }
   },
   "feedbackDrafts": "off",
   "alwaysThinkingEnabled": true,
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
-  "agentPushNotifEnabled": true,
-  "modelSettings": {
-    "claude-opus-5": {
-      "effortLevel": "medium"
-    }
-  }
+  "agentPushNotifEnabled": true
 }
