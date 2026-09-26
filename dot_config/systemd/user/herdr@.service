@@ -1,7 +1,6 @@
 # One herdr server per named session ("house"): systemctl --user enable --now herdr@<name>
 [Unit]
 Description=herdr server, session %i
-After=default.target
 
 [Service]
 ExecStart=/home/linuxbrew/.linuxbrew/bin/herdr --session %i server
