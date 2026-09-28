@@ -90,6 +90,18 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Read|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=/home/josh/Code/TheAITeam/skim-paging-map/scripts/paging-map-hook.ts; [ -f \"$f\" ] && SKIM_PAGING_MAP_LOG=\"$HOME/.cache/context-prepper/paging-map.jsonl\" bun \"$f\" || true",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
