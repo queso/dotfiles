@@ -1,10 +1,10 @@
 {
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-    "CP_MODE": "shadow",
+    "CP_MODE": "split",
     "CP_WORKLOAD": "interactive"
   },
-  "model": "fable",
+  "model": "opus",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -84,7 +84,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/josh/Code/TheAITeam/skim/bin/cp-hook.ts",
+            "command": "/home/josh/Code/TheAITeam/skim-read-hook/bin/cp-hook.ts",
             "args": [],
             "timeout": 5
           }
