@@ -108,7 +108,12 @@ coderead() { tmux split-window -h "batcat --paging=always '$1'"; }
 # agent-team teammates open as real herdr panes. Outside herdr this is a no-op.
 # Added 2026-09-12 during the herdr local test.
 claude() {
-  if [[ -n "$HERDR_PANE_ID" && -x "$HOME/.local/bin/herdmates" ]]; then
+  # Housed herdr sessions run Claude inside the house container (magi only;
+  # ~/Code/.houses/README.md). Added 2026-10-22.
+  if [[ -n "$HERDR_SESSION" && -f "$HOME/Code/.houses/$HERDR_SESSION/ACTIVE" \
+        && -x "$HOME/Code/.houses/bin/house-claude" ]]; then
+    "$HOME/Code/.houses/bin/house-claude" "$HERDR_SESSION" "$@"
+  elif [[ -n "$HERDR_PANE_ID" && -x "$HOME/.local/bin/herdmates" ]]; then
     # Lead pane share of the tab for split-pane teams (patched shim; Claude Code's own default is 30).
     export TEAMMUX_LEAD_WIDTH="${TEAMMUX_LEAD_WIDTH:-50}"
     "$HOME/.local/bin/herdmates" teammux-launch "$@"
