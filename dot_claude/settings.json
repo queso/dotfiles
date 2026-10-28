@@ -132,8 +132,13 @@
   },
   "feedbackDrafts": "off",
   "alwaysThinkingEnabled": true,
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  },
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
-  "agentPushNotifEnabled": true,
-  "switchModelsOnFlag": false
+  "switchModelsOnFlag": false,
+  "agentPushNotifEnabled": true
 }
