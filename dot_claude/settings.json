@@ -43,6 +43,15 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun /home/josh/Code/TheAITeam/Cortex/src/cli/index.ts msg inbox --hook",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "TeammateIdle": [
@@ -99,6 +108,28 @@
             "type": "command",
             "command": "f=/home/josh/Code/TheAITeam/skim-paging-map/scripts/paging-map-hook.ts; [ -f \"$f\" ] && SKIM_PAGING_MAP_LOG=\"$HOME/.cache/context-prepper/paging-map.jsonl\" bun \"$f\" || true",
             "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun /home/josh/Code/TheAITeam/Cortex/hooks/cortex-used.ts",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun /home/josh/Code/TheAITeam/Cortex/hooks/cortex-used.ts",
+            "timeout": 10
           }
         ]
       }
