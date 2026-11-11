@@ -4,7 +4,7 @@
     "CP_MODE": "split",
     "CP_WORKLOAD": "interactive"
   },
-  "model": "opus",
+  "model": "fable",
   "hooks": {
     "UserPromptSubmit": [
       {
