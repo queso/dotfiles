@@ -4,7 +4,7 @@
     "CP_MODE": "split",
     "CP_WORKLOAD": "interactive"
   },
-  "model": "fable",
+  "model": "opus",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -166,6 +166,9 @@
   "modelSettings": {
     "claude-opus-5-5": {
       "effortLevel": "medium"
+    },
+    "claude-fable-5-2": {
+      "autoCompactWindow": 400000
     }
   },
   "tui": "fullscreen",
